@@ -29,16 +29,7 @@ describe('_Community Tests', () => {
       },
     })
 
-    const schema1 = makeExecutableSchema({
-      resolvers: { Query: { hello: () => 'Hello world!' } },
-      typeDefs: `type Query { hello: String }`,
-    })
-    const schema2 = payload.schema
-
-    const stitchedSchema = stitchSchemas({
-      subschemas: [schema1, schema2],
-    })
-    const server = new ApolloServer({ schema: stitchedSchema })
+    const server = new ApolloServer({ schema: payload.schema })
     await server.start()
 
     app.use('/merged-graphql', express.json(), expressMiddleware(server))
@@ -56,13 +47,13 @@ describe('_Community Tests', () => {
     const response = await fetch(`${apiUrl}`, {
       method: 'POST',
       body: JSON.stringify({
-        query: 'query Test { hello Users { docs { id } } }',
+        query: 'query Test { Users { docs { id } } }',
         operationName: 'Test',
       }),
       headers,
     }).then((res) => res.json())
 
-    expect(response['data']['hello']).toEqual('Hello world!')
+    console.log(response['errors'])
     expect(response['data']['Users']).not.toBeNull()
   })
 })
