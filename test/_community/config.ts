@@ -30,6 +30,7 @@ export default buildConfigWithDefaults({
 
     await payload.create({
       collection: postsSlug,
+      draft: true,
       data: {
         text: 'example post',
       },
