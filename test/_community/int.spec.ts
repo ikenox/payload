@@ -39,34 +39,39 @@ describe('_Community Tests', () => {
     }
   })
 
-  // --__--__--__--__--__--__--__--__--__
-  // You can run tests against the local API or the REST API
-  // use the tests below as a guide
-  // --__--__--__--__--__--__--__--__--__
-
   it('local API example', async () => {
-    const newPost = await payload.create({
+    // save draft
+    const post1 = await payload.create({
       collection: postsSlug,
+      draft: true,
       data: {
-        text: 'LOCAL API EXAMPLE',
+        text: 'post1',
       },
     })
+    // save draft again
+    await payload.update({
+      collection: postsSlug,
+      draft: true,
+      id: post1.id,
+      data: { text: 'post1-2' },
+    })
+    // publish
+    await payload.update({
+      collection: postsSlug,
+      id: post1.id,
+      data: { text: 'post1-3', tag: ['tag1'], _status: 'published' },
+    })
 
-    expect(newPost.text).toEqual('LOCAL API EXAMPLE')
-  })
-
-  it('rest API example', async () => {
-    const newPost = await fetch(`${apiUrl}/${postsSlug}`, {
-      method: 'POST',
-      headers: {
-        ...headers,
-        Authorization: `JWT ${jwt}`,
-      },
-      body: JSON.stringify({
-        text: 'REST API EXAMPLE',
-      }),
-    }).then((res) => res.json())
-
-    expect(newPost.doc.text).toEqual('REST API EXAMPLE')
+    const versions = await payload.findVersions({
+      collection: postsSlug,
+      draft: true,
+      where: { parent: { equals: post1.id } },
+      sort: 'id',
+    })
+    expect(versions.docs.map(({ id, version: { tag } }) => ({ id, tag }))).toStrictEqual([
+      { id: 1, tag: [] },
+      { id: 2, tag: [] },
+      { id: 3, tag: ['tag1'] },
+    ])
   })
 })

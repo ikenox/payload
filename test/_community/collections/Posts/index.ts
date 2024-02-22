@@ -1,7 +1,5 @@
 import type { CollectionConfig } from '../../../../packages/payload/src/collections/config/types'
 
-import { mediaSlug } from '../Media'
-
 export const postsSlug = 'posts'
 
 export const PostsCollection: CollectionConfig = {
@@ -10,15 +8,8 @@ export const PostsCollection: CollectionConfig = {
       name: 'text',
       type: 'text',
     },
-    {
-      name: 'associatedMedia',
-      access: {
-        create: () => true,
-        update: () => false,
-      },
-      relationTo: mediaSlug,
-      type: 'upload',
-    },
+    { name: 'tag', type: 'select', hasMany: true, options: ['tag1', 'tag2', 'tag3'] },
   ],
+  versions: { drafts: true },
   slug: postsSlug,
 }
