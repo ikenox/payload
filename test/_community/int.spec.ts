@@ -49,24 +49,24 @@ describe('_Community Tests', () => {
       collection: postsSlug,
       data: {
         text: 'LOCAL API EXAMPLE',
+        _status: 'published',
       },
     })
 
     expect(newPost.text).toEqual('LOCAL API EXAMPLE')
-  })
 
-  it('rest API example', async () => {
-    const newPost = await fetch(`${apiUrl}/${postsSlug}`, {
-      method: 'POST',
-      headers: {
-        ...headers,
-        Authorization: `JWT ${jwt}`,
-      },
-      body: JSON.stringify({
-        text: 'REST API EXAMPLE',
-      }),
-    }).then((res) => res.json())
+    await payload.update({
+      collection: postsSlug,
+      id: newPost.id,
+      draft: true,
+      data: { text: 'UPDATED' },
+    })
 
-    expect(newPost.doc.text).toEqual('REST API EXAMPLE')
+    const currentPost = await payload.findByID({
+      collection: postsSlug,
+      id: newPost.id,
+    })
+
+    expect(currentPost.text).toEqual('LOCAL API EXAMPLE')
   })
 })

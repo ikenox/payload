@@ -21,4 +21,5 @@ export const PostsCollection: CollectionConfig = {
     },
   ],
   slug: postsSlug,
+  versions: { drafts: true },
 }
