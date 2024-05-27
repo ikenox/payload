@@ -405,6 +405,8 @@ function buildObjectType({
             }
 
             await Promise.all(resultPromises)
+            console.debug('returned:', JSON.stringify(results, null, 2))
+
             return results
           }
 

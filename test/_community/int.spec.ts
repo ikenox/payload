@@ -2,6 +2,7 @@ import payload from '../../packages/payload/src'
 import { devUser } from '../credentials'
 import { initPayloadTest } from '../helpers/configHelpers'
 import { postsSlug } from './collections/Posts'
+import { tagsSlug } from './collections/Tags'
 
 require('isomorphic-fetch')
 
@@ -44,29 +45,47 @@ describe('_Community Tests', () => {
   // use the tests below as a guide
   // --__--__--__--__--__--__--__--__--__
 
-  it('local API example', async () => {
-    const newPost = await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'LOCAL API EXAMPLE',
-      },
+  it('rest API example', async () => {
+    const tag1 = await payload.create({
+      collection: tagsSlug,
+      data: { name: 'tag1', visible: false },
+    })
+    const tag2 = await payload.create({
+      collection: tagsSlug,
+      data: { name: 'tag2', visible: true },
     })
 
-    expect(newPost.text).toEqual('LOCAL API EXAMPLE')
-  })
+    await payload.create({
+      collection: postsSlug,
+      data: { text: 'post1', tags: [tag1.id, tag2.id] },
+    })
 
-  it('rest API example', async () => {
-    const newPost = await fetch(`${apiUrl}/${postsSlug}`, {
-      method: 'POST',
-      headers: {
-        ...headers,
-        Authorization: `JWT ${jwt}`,
+    const query = () =>
+      fetch(`${apiUrl}/graphql`, {
+        method: 'POST',
+        body: JSON.stringify({
+          query: `query {
+          Posts {
+            docs {
+              text
+              tags {
+                name
+              }
+            }
+          }
+        }`,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+    const response = await query()
+    // pass
+    expect(JSON.parse(await response.text())).toStrictEqual({
+      data: {
+        Posts: {
+          docs: [{ text: 'post1', tags: [{ name: 'tag2' }] }],
+        },
       },
-      body: JSON.stringify({
-        text: 'REST API EXAMPLE',
-      }),
-    }).then((res) => res.json())
-
-    expect(newPost.doc.text).toEqual('REST API EXAMPLE')
+    })
   })
 })

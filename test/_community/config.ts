@@ -2,6 +2,7 @@ import { buildConfigWithDefaults } from '../buildConfigWithDefaults'
 import { devUser } from '../credentials'
 import { MediaCollection } from './collections/Media'
 import { PostsCollection, postsSlug } from './collections/Posts'
+import { TagsCollection } from './collections/Tags'
 import { MenuGlobal } from './globals/Menu'
 
 export default buildConfigWithDefaults({
@@ -9,6 +10,7 @@ export default buildConfigWithDefaults({
   collections: [
     PostsCollection,
     MediaCollection,
+    TagsCollection,
     // ...add more collections here
   ],
   globals: [
@@ -25,30 +27,6 @@ export default buildConfigWithDefaults({
       data: {
         email: devUser.email,
         password: devUser.password,
-      },
-    })
-
-    await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'example post',
-        title: 'title1',
-      },
-    })
-
-    await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'example post',
-        title: 'title3',
-      },
-    })
-
-    await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'example post',
-        title: 'title2',
       },
     })
   },
