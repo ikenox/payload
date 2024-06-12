@@ -11,13 +11,11 @@ export const PostsCollection: CollectionConfig = {
       type: 'text',
     },
     {
-      name: 'associatedMedia',
-      access: {
-        create: () => true,
-        update: () => false,
-      },
-      relationTo: mediaSlug,
-      type: 'upload',
+      name: 'tags',
+      type: 'select',
+      required: true,
+      hasMany: true,
+      options: ['a', 'b', 'c'],
     },
   ],
   slug: postsSlug,

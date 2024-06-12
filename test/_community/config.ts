@@ -32,6 +32,7 @@ export default buildConfigWithDefaults({
       collection: postsSlug,
       data: {
         text: 'example post',
+        tags: ['a', 'b'],
       },
     })
   },
